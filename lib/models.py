@@ -1,10 +1,21 @@
-from sqlalchemy import ForeignKey, Column, Integer, String, MetaData
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
+# app/models.py
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.db import Base
 
-convention = {
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-}
-metadata = MetaData(naming_convention=convention)
+class Game(Base):
+    __tablename__ = "games"
 
-Base = declarative_base(metadata=metadata)
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    
+    reviews = relationship("Review", back_populates="game")
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(String)
+    game_id = Column(Integer, ForeignKey("games.id"))
+    
+    game = relationship("Game", back_populates="reviews")
